@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Stihl run</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="snake.ico">
+<style>
+#board {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+#score {
+    text-align: center;
+    font-size: 30px;
+    font-family: "comic sans ms", sans-serif;
+}
+</style>
+</head>
+<body>
+<div id="score">Stihl Imow</div>
+<canvas id="board" width="700" height="710"></canvas>
+
+<script>
+function boardinit() {
+    cvs = document.getElementById("board");
+    ctx = cvs.getContext("2d");
+    boardbg = "lightgrey";
+    boardbd = "black";
+    cn = 16;
+    co = [{x:210,y:100}, {x:250,y:100}, {x:600,y:300}, {x:600,y:700}, {x:25,y:700},
+          {x:25,y:300}, {x:50,y:100}, {x:100,y:100}, {x:100,y:170}, {x:80,y:170},
+          {x:80,y:470}, {x:375,y:470}, {x:375,y:275}, {x:325,y:275}, {x:325,y:200},
+          {x:210,y:200},{x:210,y:100}];
+    ed = [];
+    for (i=0;i<cn;i++) {
+        ed.push({x:co[i+1].x - co[i].x, y:co[i+1].y - co[i].y});
+    }    
+    sp = {x:210,y:150};
+    sd = {x:10,y:0};
+    ep = {x:150,y:150};
+}
+
+function gameinit() {
+    let speed = 200;
+    gametimer = setInterval(gamerun, speed);
+    boardclear();
+}
+
+function boardclear() {
+    ctx.fillStyle = boardbg;
+    ctx.strokeStyle = boardbd;
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(co[0].x, co[0].y);
+    for (i = 1; i<cn; i++) {
+        ctx.lineTo(co[i].x, co[i].y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+}
+
+function boarddraw() {
+    ctx.beginPath();
+    ctx.moveTo(sp.x,sp.y);
+    ctx.lineTo(ep.x,ep.y);
+    ctx.stroke();
+    sp.x = ep.x;
+    sp.y = ep.y;
+}
+
+function gamerun() {
+    gametest();
+    boarddraw();
+}
+
+function gametest() {
+    var edi = -1;
+    var eds = 0;
+    var s, t, v, det;
+    for (i=0;i<cn;i++) {
+        det = -sd.x*ed[i].y+sd.y*ed[i].x;
+        if (det!=0) {
+            s = (ed[i].y*(sp.x-co[i].x)-ed[i].x*(sp.y-co[i].y))/det;
+            t = (sd.y*(sp.x-co[i].x)-sd.x*(sp.y-co[i].y))/det;
+//            console.log(t);
+//            console.log(s);
+            if (s>0 && 0<=t && t<=1) {
+                if (edi==-1) {
+                    edi = i;
+                    eds = s;
+                } else if (s<eds) {
+                    edi = i;
+                    eds = s;
+                }
+            }
+        }
+    }               
+    ep.x = sp.x+eds*sd.x;
+    ep.y = sp.y+eds*sd.y;
+    if ((ep.x!=co[edi+1].x || ep.y!=co[edi+1].y) && sd.x*ed[edi].x+sd.y*ed[edi].y > 0) {
+        v = Math.random() * Math.PI/2;
+        sd.x = Math.cos(v)*ed[edi].x - Math.sin(v)*ed[edi].y;    
+        sd.y = Math.sin(v)*ed[edi].x + Math.cos(v)*ed[edi].y;    
+    } else {
+        v = (Math.random()+1) * Math.PI/2 ;
+        sd.x = Math.cos(v)*ed[edi].x - Math.sin(v)*ed[edi].y;    
+        sd.y = Math.sin(v)*ed[edi].x + Math.cos(v)*ed[edi].y;    
+    }
+}
+
+boardinit();
+boardclear();
+gameinit();
+
+</script>
+</body>
+</html>
