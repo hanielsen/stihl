@@ -41,7 +41,8 @@ function boardinit() {
         ed.push({x:co[i+1].x - co[i].x, y:co[i+1].y - co[i].y});
     }    
     sp = {x:210,y:150};
-    sd = {x:10,y:0};
+    var v = -Math.random() * Math.PI/2;
+    sd = {x:Math.cos(v),y:Math.sin(v)};
     ep = {x:150,y:150};
 }
 
@@ -88,8 +89,6 @@ function gametest() {
         if (det!=0) {
             s = (ed[i].y*(sp.x-co[i].x)-ed[i].x*(sp.y-co[i].y))/det;
             t = (sd.y*(sp.x-co[i].x)-sd.x*(sp.y-co[i].y))/det;
-//            console.log(t);
-//            console.log(s);
             if (s>0 && 0<=t && t<=1) {
                 if (edi==-1) {
                     edi = i;
